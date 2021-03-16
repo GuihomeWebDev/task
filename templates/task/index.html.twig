@@ -1,0 +1,65 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Bienvenu sur votre gestionnaire de taches {% endblock %}
+{% block stylesheets %}
+{{ parent() }}
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.0/js/bootstrap-datepicker.min.js"></script>
+    <script>
+        jQuery(document).ready(function() {
+            $('.js-datepicker').datepicker();
+        });
+    </script>
+{% endblock %}
+{% block body %}
+<div class="container">
+    <div class="row">
+        <div class="col md-12">
+        <h2>Notification</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-8">
+            <h2>Tableau des taches</h2>
+            <table class="table">
+        <thead>
+        <tr>
+            <th>Tache</th>
+            <th>Déscription de la tache</th>
+            <th>Date de création</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for tasks in task %}
+            <tr>
+                <td>{{ tasks.name }}</td>
+                <td>{{ tasks.description }}</td>               
+                <td>{{ tasks.date |date("d/m/y") }}</td>
+                <td>
+                  <a class="btn btn-primary" href="{{ path('task_edit', {'id': tasks.id}) }}">Modifier</a>
+                </td>                
+                <td>
+                <form method="post" action="{{ path('task_delete', {'id': tasks.id}) }}" onsubmit="return confirm('Voulez vous supprimer cette tache ?');">
+                    <input  type="hidden" name="_method" value="DELETE">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ tasks.id) }}">
+                    <button class="btn btn-danger">Supprimer</button>
+                </form>
+                </td>
+            </tr>
+        {% endfor %}        
+    </table>
+        </div>
+            <div class="col-md-4">
+                <h2>Ajouter une tache</h2>                
+                {{ form_start(form) }}
+                 {{ form_widget(form) }}                 
+                 <button class="btn btn-success">{{ button_label|default('Enregistrer') }}</button>
+                {{ form_end(form) }} 
+                <br>
+                
+            </div>
+    </div>
+</div>
+{% endblock %}
