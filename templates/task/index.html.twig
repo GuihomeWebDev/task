@@ -12,12 +12,50 @@
             $('.js-datepicker').datepicker();
         });
     </script>
+<script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>    <script>
+<script>
+    $(document).ready(function(){   
+        $("#loadtasks").on("click", function(event){  
+        $.ajax({  
+            url:        '/task{id}',  
+            type:       'POST',   
+            dataType:   'json',  
+            async:      true,  
+            
+            success: function(data, status) {  
+                var e = $('<tr><th>Name</th><th>date</th></tr>');  
+                $('#tasks').html('');  
+                $('#tasks').append(e);  
+                
+                for(i = 0; i < data.length; i++) {  
+                    tasks = data[i];  
+                    var e = $('<tr><td id = "name"></td><td id = "date"></td></tr>');
+                    
+                    $('#name', e).html(tasks['name']);  
+                    $('#date', e).html(tasks['date']);  
+                    $('#tasks').append(e);  
+                }  
+            },  
+            error : function(xhr, textStatus, errorThrown) {  
+                alert('Ajax request failed.');  
+            }  
+        });  
+        });  
+    });  
+</script>
 {% endblock %}
 {% block body %}
 <div class="container">
     <div class="row">
         <div class="col md-12">
         <h2>Notification</h2>
+            </br> 
+            </br>  
+            
+            <table class = "table">  
+                <tbody id = "name"></tbody>  
+                <tbody id = "date"></tbody>  
+             </table>     
         </div>
     </div>
     <div class="row">
@@ -27,7 +65,7 @@
         <thead>
         <tr>
             <th>Tache</th>
-            <th>Déscription de la tache</th>
+            <th>Description de la tache</th>
             <th>Date de création</th>
         </tr>
         </thead>
@@ -55,7 +93,7 @@
                 <h2>Ajouter une tache</h2>                
                 {{ form_start(form) }}
                  {{ form_widget(form) }}                 
-                 <button class="btn btn-success">{{ button_label|default('Enregistrer') }}</button>
+                 <button id = "loadtask" class="btn btn-success">{{ button_label|default('Enregistrer') }}</button>
                 {{ form_end(form) }} 
                 <br>
                 

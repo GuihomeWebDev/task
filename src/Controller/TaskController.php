@@ -6,11 +6,12 @@ use App\Entity\Task;
 use App\Form\TaskType;
 use App\Repository\TaskRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 
 class TaskController extends AbstractController
 {
@@ -31,13 +32,48 @@ class TaskController extends AbstractController
             $em->flush();
             return $this->redirectToRoute('task');
         }
+         $task = $taskRepository->findAll();
+        if ($request->isXmlHttpRequest() || $request->query->get('showJson') == 1) {  
+            $jsonData = array();  
+            $idx = 0;  
+            foreach($task as $tasks) {  
+                $temp = array(
+                    'name' => $tasks->getName(),  
+                    'description' => $tasks->getDescription(),  
+                );   
+                $jsonData[$idx++] = $temp;  
+            } 
+            return new JsonResponse($jsonData); 
+        } else {
+
         return $this->render('task/index.html.twig',[
             'task' => $taskRepository->findAll(),
             'form' => $form->createView(),
         ]);
-    }  
-    
+        }
+    }
 
+    /**
+     * @Route("/task", name="task_ajax")
+     */  
+    public function ajaxAction(Request $request, TaskRepository $taskRepository)
+     {
+         $task = $taskRepository->findAll();
+        if ($request->isXmlHttpRequest() || $request->query->get('id') == 1) {  
+            $jsonData = array();  
+            $idx = 0;  
+            foreach($task as $tasks) {  
+                $temp = array(
+                    'name' => $tasks->getName(),  
+                    'description' => $tasks->getDescription(),  
+                );   
+                $jsonData[$idx++] = $temp;  
+            } 
+            return new JsonResponse($jsonData); 
+        } else { 
+            return $this->render('task/index.html.twig'); 
+        }
+     }
     /**
      * @Route("/task{id}", name="task_delete", methods={"DELETE"})
      */
