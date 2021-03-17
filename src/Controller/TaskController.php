@@ -32,25 +32,10 @@ class TaskController extends AbstractController
             $em->flush();
             return $this->redirectToRoute('task');
         }
-         $task = $taskRepository->findAll();
-        if ($request->isXmlHttpRequest() || $request->query->get('showJson') == 1) {  
-            $jsonData = array();  
-            $idx = 0;  
-            foreach($task as $tasks) {  
-                $temp = array(
-                    'name' => $tasks->getName(),  
-                    'description' => $tasks->getDescription(),  
-                );   
-                $jsonData[$idx++] = $temp;  
-            } 
-            return new JsonResponse($jsonData); 
-        } else {
-
         return $this->render('task/index.html.twig',[
             'task' => $taskRepository->findAll(),
             'form' => $form->createView(),
         ]);
-        }
     }
 
     /**
@@ -59,7 +44,7 @@ class TaskController extends AbstractController
     public function ajaxAction(Request $request, TaskRepository $taskRepository)
      {
          $task = $taskRepository->findAll();
-        if ($request->isXmlHttpRequest() || $request->query->get('id') == 1) {  
+        if ($request->isXmlHttpRequest() || $request->query->get('showJson') == 1) {  
             $jsonData = array();  
             $idx = 0;  
             foreach($task as $tasks) {  
